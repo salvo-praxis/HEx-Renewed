@@ -3,50 +3,48 @@
 /**
  * SUMMARY:
  * 
- * This PHP script is designed to initiate a DDoS attack against a specified IP address 
- * under certain conditions. The script goes through several blocks of execution:
+ * The script facilitates launching a DDoS attack on a specified IP address, given 
+ * certain prerequisites are satisfied. The script can be visualized as a sequence 
+ * of interconnected blocks, each serving a distinct purpose in the overall workflow:
  * 
- * 1. Session Initialization: Ensures that the user is logged in.
- * 2. Request Validation: Validates the request type and the presence of an IP address.
- * 3. IP Address Validation: Validates the format of the provided IP address.
- * 4. Process Initiation: Instantiates necessary classes and checks conditions to launch 
- *    the attack. If conditions are met, a DDoS attack is initiated, and a notice is added to the session.
- * 5. Handle Errors: Any error encountered during the previous steps is added to the session as an error message.
- * 6. Redirection: Redirects the user to the specified location.
+ * 1. **Session Initialization**:
+ *    - Establishes a user session.
+ *    - Redirects to the index page if the user is not logged in.
  * 
- * CHANGES AND REASONS:
+ * 2. **Request Validation**:
+ *    - Checks if the request is of type POST.
+ *    - Validates the presence of the 'ip' parameter in the request.
+ *    - Sets an error message for any validation failure.
  * 
- * 1. Improved Structuring:
- *    - The code is structured into clear blocks, each with a specific purpose, to improve readability 
- *      and maintainability.
+ * 3. **IP Address Validation**:
+ *    - Uses the System class to validate the format of the provided IP address.
+ *    - Sets an error message if the IP address is invalid.
  * 
- * 2. Detailed Commenting:
- *    - Each block and significant line of code is accompanied by comments explaining its purpose 
- *      and functionality. This is essential for understanding the flow and logic of the script.
+ * 4. **Process Initiation**:
+ *    - Initializes necessary classes for launching the attack.
+ *    - Retrieves player information based on the IP address.
+ *    - Validates the following conditions:
+ *        a) The IP exists.
+ *        b) The IP is listed in the user's Hacked Database.
+ *        c) The user possesses at least 3 working DDoS viruses.
+ *    - If all conditions are satisfied, initiates the DDoS attack process.
+ *    - Adds a notice to the session indicating the launch of the attack.
  * 
- * 3. Dependency Explanation:
- *    - At the beginning of the script, dependencies are listed and briefly explained to provide 
- *      context on what classes and functionalities are being used.
+ * 5. **Handle Errors**:
+ *    - Any error encountered in the previous blocks is added to the session.
+ *    - Provides a mechanism for debugging and user feedback.
  * 
- * 4. Explicit Error Handling:
- *    - Errors are explicitly handled and added to the session. This approach provides clearer feedback 
- *      and aids in debugging.
+ * 6. **Redirection**:
+ *    - Independently of the success or failure of the previous blocks, the script 
+ *      concludes by redirecting the user to a specific location.
  * 
- * 5. IP Validation:
- *    - Introduced a separate block for IP address validation to ensure the input is in the correct format 
- *      before proceeding with the process.
- * 
- * These changes aim to make the script more robust, understandable, and maintainable, providing a solid 
- * foundation for future modifications and enhancements.
- */
-
-/**
  * Dependencies:
  * - Session.class.php: Manages user sessions.
- * - System.class.php: Used for IP address validation.
- * - Player.class.php: Retrieves player information by IP.
- * - PC.class.php: Contains the Virus class.
- * - List.class.php: Checks if the IP is listed in the Hacked Database.
+ * - System.class.php: Provides IP address validation.
+ * - Player.class.php: Retrieves player information by IP address.
+ * - PC.class.php: Assumed to contain the Virus class. (UNDETERMINED)
+ * - List.class.php: Checks whether the IP is listed in the Hacked Database.
+ * 
  */
 
 // ----------------------------------------
@@ -113,11 +111,17 @@ if (empty($error)) {
     // 1. The player exists.
     // 2. The IP is listed in the user’s Hacked Database.
     // 3. The user has at least 3 working DDoS viruses.
-    if ($playerInfo['0']['existe'] === 1 
-        && $list->isListed($_SESSION['id'], $ip) 
-        && $virus->DDoS_count() >= 3) {
-
-        // Instantiate the Process class for handling process-related functionalities.
+   if ($playerInfo['0']['existe'] !== 1) {
+        $error = 'This IP doesnt exist.';
+    } elseif (!$list->isListed($_SESSION['id'], $ip)) {
+        $error = 'This IP is not on your Hacked Database.';
+    } elseif ($virus->DDoS_count() < 3) {
+        $error = 'You need to have at least 3 working DDoS viruses.';
+   }
+    
+   if (empty($error)) 
+   {
+       // Instantiate the Process class for handling process-related functionalities.
         $process = new Process();
 
         // Determine whether the player is an NPC.
@@ -142,9 +146,6 @@ if (empty($error)) {
                 'notice'
             );
         }
-    } else {
-        // If any condition is not met, set the appropriate error message.
-        $error = 'You need to have at least 3 working DDoS viruses.';
     }
 }
 
@@ -160,5 +161,3 @@ if (!empty($error)) {
 // ----------------------------------------
 header("Location:list?action=ddos");
 exit();
-
-?>
