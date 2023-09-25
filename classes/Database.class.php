@@ -103,11 +103,25 @@ class LRSys {
         $this->keepalive = FALSE;
     }
 
+    /**
+     * Sets the value of the keepalive property.
+     *
+     * @param bool $keep The value to set the keepalive property to.
+     */
     public function set_keepalive($keep){
-        // Validate the input parameter
+        // Validate the input parameter to ensure it is a boolean value.
+        // This helps in maintaining the integrity of the keepalive property.
+        if (!is_bool($keep)) {
+            // Optionally, throw an exception or trigger an error if the validation fails.
+            // throw new InvalidArgumentException('Parameter $keep must be a boolean value.');
+            trigger_error('Parameter $keep must be a boolean value.', E_USER_WARNING);
+            return;
+        }
+        
+        // Assigning the validated value to the keepalive property.
         $this->keepalive = $keep;
     }
-
+    
     public function register($username, $password, $email)
     {
         // Validate input parameters and consider using parameterized queries for SQL
