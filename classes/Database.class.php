@@ -1,6 +1,7 @@
 <?php
 class LRSys {
 
+    // Properties should have doc comments specifying their purpose and type
     public $name;
     public $user;
     private $pass;
@@ -18,6 +19,7 @@ class LRSys {
     private $mission;
     
     function __construct() {
+        // Consider using an autoloader instead of requiring classes manually
         require_once 'Session.class.php';
         $this->pdo = PDO_DB::factory();
         $this->session = new Session();
@@ -33,15 +35,16 @@ class LRSys {
         $this->clan = new Clan();
 
         $this->keepalive = FALSE;
-        
     }
 
     public function set_keepalive($keep){
+        // Validate the input parameter
         $this->keepalive = $keep;
     }
 
     public function register($username, $password, $email)
     {
+        // Validate input parameters and consider using parameterized queries for SQL
         $this->user = $username;
         $this->pass = $password;
         $this->email = $email;
@@ -49,6 +52,7 @@ class LRSys {
         require 'BCrypt.class.php';
         $bcrypt = new BCrypt();
         $hash = $bcrypt->hash(htmlentities($this->pass));
+        // Consider using a more secure method for generating unique IPs
         $gameIP1 = rand(0, 255);
         $gameIP2 = rand(0, 255);
         $gameIP3 = rand(0, 255);
@@ -58,6 +62,7 @@ class LRSys {
         $python = new Python();
         $python->createUser($this->user, $hash, $this->email, $gameIP);
     
+        // Use parameterized queries to prevent SQL injection
         $sql = 'SELECT COUNT(*) AS total, id FROM users WHERE login = :user LIMIT 1';
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(array(':user' => $this->user));
@@ -72,6 +77,7 @@ class LRSys {
         $finances = new Finances();
         $finances->createAccount($regInfo->id);
     
+        // Use parameterized queries to prevent SQL injection
         $sql = "INSERT INTO stats_register (userID, ip) VALUES (:userID, :ip)";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(array(':userID' => $regInfo->id, ':ip' => $_SERVER['REMOTE_ADDR']));
@@ -82,6 +88,7 @@ class LRSys {
     }
 
     private function verifyRegister() {
+        // Consider refactoring this method to reduce complexity and improve readability
         $system = new System();
         
         if(!$system->validate($this->user, 'username')){
@@ -94,6 +101,7 @@ class LRSys {
             return FALSE;
         }
 
+        // Consider simplifying the email validation logic
         if ((strlen(preg_replace('![^A-Z]+!', '', $this->email)) >= 5 && preg_match_all("/[0-9]/", $this->email) >= 2) || preg_match_all("/[0-9]/", $this->email) >= 5){
             $this->session->addMsg(_('Registration complete. You can login now.'), 'notice');
             return FALSE;
@@ -105,6 +113,7 @@ class LRSys {
         }
         
         $this->session->newQuery();
+        // Use parameterized queries to prevent SQL injection
         $sqlQuery = "SELECT email FROM users WHERE login = ? OR email = ? LIMIT 1";
         $sqlLog = $this->pdo->prepare($sqlQuery);
         $sqlLog->execute(array($this->user, $this->email));
@@ -134,10 +143,12 @@ class LRSys {
 
     public function getLastInsertedID()
     {
+        // Consider adding a doc comment to explain the purpose of this method
         return $this->pdo->lastInsertId();
     }
 
     public function login($logUser, $logPass, $special = FALSE) {
+        // Consider refactoring this method to reduce complexity and improve readability
         date_default_timezone_set('UTC');
         $remember = FALSE;
     
@@ -162,6 +173,7 @@ class LRSys {
             require 'BCrypt.class.php';
             $bcrypt = new BCrypt();
             $this->session->newQuery();
+            // Use parameterized queries to prevent SQL injection
             $sqlQuery = "SELECT password, id FROM users WHERE BINARY login = ? LIMIT 1";
             $sqlLog = $this->pdo->prepare($sqlQuery);
             $sqlLog->execute(array($this->user));
@@ -175,6 +187,7 @@ class LRSys {
                     $storyline = $this->storyline;
                     $clan = $this->clan;
     
+                    // Use parameterized queries to prevent SQL injection
                     $sql = "SELECT COUNT(*) AS total FROM users_premium WHERE id = ".$dados['0']['id']." LIMIT 1";
                     $total = $this->pdo->query($sql)->fetch(PDO::FETCH_OBJ)->total;
     
@@ -217,11 +230,13 @@ class LRSys {
     }    
     
     private function loginDatabase($id){
-        
+        // Consider adding a doc comment to explain the purpose of this method
         $this->session->newQuery();
+        // Use parameterized queries to prevent SQL injection
         $sql = 'SELECT COUNT(*) AS total FROM users_online WHERE id = '.$id.' LIMIT 1';
         if($this->pdo->query($sql)->fetch(PDO::FETCH_OBJ)->total > 0){
             $this->session->newQuery();
+            // Use parameterized queries to prevent SQL injection
             $sql = 'DELETE FROM users_online WHERE id = '.$id.' LIMIT 1';
             $this->pdo->query($sql);
         }
@@ -230,15 +245,15 @@ class LRSys {
         $rememberMe = new RememberMe($key, $this->pdo);
         $rememberMe->remember($id, false, $this->keepalive);
         $this->session->newQuery();
+        // Use parameterized queries to prevent SQL injection
         $sql = 'UPDATE users SET lastLogin = NOW() WHERE id = :id';
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(array(':id' => $id));
         setcookie('logged', '1', time() + 172800);
-        
-        
     }
     
     private function verifyLogin($fb, $tt, $rm) {
+        // Consider adding a doc comment to explain the purpose of this method
         if($fb || $rm || $tt){
             return TRUE;
         }
