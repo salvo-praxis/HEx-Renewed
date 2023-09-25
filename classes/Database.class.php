@@ -1,39 +1,105 @@
 <?php
 class LRSys {
 
-    // Properties should have doc comments specifying their purpose and type
+    /**
+     * @var string The name of the user or system.
+     */
     public $name;
+    
+    /**
+     * @var string The username used for authentication.
+     */
     public $user;
+    
+    /**
+     * @var string The password used for authentication.
+     */
     private $pass;
+    
+    /**
+     * @var string The email address of the user.
+     */
     public $email;
+    
+    /**
+     * @var bool Flag to determine whether to keep the session alive.
+     */
     public $keepalive;
+    
+    /**
+     * @var Session The session object for managing user sessions.
+     */
     public $session;
+    
+    /**
+     * @var string The language preference of the user or system.
+     */
     private $lang;
+    
+    /**
+     * @var PDO The PDO object for database interactions.
+     */
     private $pdo;
+    
+    /**
+     * @var mixed The process object or identifier.
+     */
     private $process;
-
+    
+    /**
+     * @var LogVPC The log object for logging activities or events.
+     */
     private $log;
+    
+    /**
+     * @var Ranking The ranking object for managing user rankings.
+     */
     private $ranking;
+    
+    /**
+     * @var Storyline The storyline object for managing the storyline or narrative.
+     */
     private $storyline;
+    
+    /**
+     * @var Clan The clan object for managing user clans or groups.
+     */
     private $clan;
+    
+    /**
+     * @var Mission The mission object for managing user missions or tasks.
+     */
     private $mission;
     
     function __construct() {
-        // Consider using an autoloader instead of requiring classes manually
+        // Using an autoloader would allow for automatic loading of class files when needed,
+        // reducing the need for manual require statements.
+        // Example of using an autoloader:
+        // spl_autoload_register(function ($class_name) {
+        //     include $class_name . '.class.php';
+        // });
+    
+        // Manually requiring necessary class files.
         require_once 'Session.class.php';
-        $this->pdo = PDO_DB::factory();
-        $this->session = new Session();
         require 'Player.class.php';
         require 'PC.class.php';
         require 'Ranking.class.php';
         require 'Storyline.class.php';
         require 'Clan.class.php';
-
+    
+        // Initializing the PDO object for database interactions.
+        $this->pdo = PDO_DB::factory();
+    
+        // Initializing the session object for managing user sessions.
+        $this->session = new Session();
+    
+        // Initializing various objects for managing logs, rankings, storylines, and clans.
         $this->log = new LogVPC();
         $this->ranking = new Ranking();
         $this->storyline = new Storyline();
         $this->clan = new Clan();
-
+    
+        // Setting the keepalive property to FALSE by default.
         $this->keepalive = FALSE;
     }
 
