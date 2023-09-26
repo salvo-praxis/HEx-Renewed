@@ -8,21 +8,90 @@
 class LRSys {
 
     // Declare class properties
+    /**
+     * @var string $name
+     * Holds the name of the user or system component.
+     */
     public $name;
+
+    /**
+     * @var string $user
+     * Holds the username of the user interacting with the system.
+     */
     public $user;
+
+    /**
+     * @var string $pass
+     * Holds the password of the user. Kept private for security reasons.
+     */
     private $pass;
+
+    /**
+     * @var string $email
+     * Holds the email address of the user.
+     */
     public $email;
+
+    /**
+     * @var bool $keepalive
+     * Flag to determine whether the session should be kept alive.
+     */
     public $keepalive;
+
+    /**
+     * @var Session $session
+     * Holds the session object for managing user sessions.
+     */
     public $session;
+
+    /**
+     * @var string $lang
+     * Holds the preferred language of the user.
+     */
     private $lang;
+
+    /**
+     * @var PDO $pdo
+     * Holds the PDO object for database interactions.
+     */
     private $pdo;
+
+    /**
+     * @var string $process
+     * Holds the current process or action being performed in the system.
+     */
     private $process;
 
+    /**
+     * @var LogVPC $log
+     * Holds the LogVPC object for logging system events.
+     */
     private $log;
+
+    /**
+     * @var Ranking $ranking
+     * Holds the Ranking object for managing user rankings.
+     */
     private $ranking;
+
+    /**
+     * @var Storyline $storyline
+     * Holds the Storyline object for managing the game's storyline.
+     */
     private $storyline;
+
+    /**
+     * @var Clan $clan
+     * Holds the Clan object for managing user clans.
+     */
     private $clan;
+
+    /**
+     * @var Mission $mission
+     * Holds the Mission object for managing user missions.
+     */
     private $mission;
+    
     
     /**
      * Constructor
