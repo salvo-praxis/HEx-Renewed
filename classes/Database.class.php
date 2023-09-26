@@ -1,5 +1,10 @@
 <?php
-// Define the LRSys class
+/**
+ * Class LRSys
+ * 
+ * This class handles various system-level functionalities such as user registration,
+ * login, session management, and interactions with other classes.
+ */
 class LRSys {
 
     // Declare class properties
@@ -19,7 +24,11 @@ class LRSys {
     private $clan;
     private $mission;
     
-    // Constructor to initialize the class properties and required classes
+    /**
+     * Constructor
+     * 
+     * Initializes the LRSys class and its dependencies.
+     */
     function __construct() {
         // Include required class files
         require_once 'Session.class.php';
@@ -46,7 +55,16 @@ class LRSys {
         $this->keepalive = $keep;
     }
 
-    // Method to register a new user
+    /**
+     * Register
+     * 
+     * Registers a new user in the system.
+     * 
+     * @param string $username The username of the new user.
+     * @param string $password The password of the new user.
+     * @param string $email The email address of the new user.
+     * @return int|bool The ID of the newly registered user, or false on failure.
+     */
     public function register($username, $password, $email) {
         // Set user, pass, and email properties
         $this->user = $username;
@@ -100,7 +118,13 @@ class LRSys {
         return $regInfo->id;
     }
 
-    // Method to verify the user registration
+    /**
+     * Verify Register
+     * 
+     * Verifies the registration details provided by the user.
+     * 
+     * @return bool True if the registration details are valid, false otherwise.
+     */
     private function verifyRegister() {
         // Create a new System object
         $system = new System();
@@ -155,12 +179,27 @@ class LRSys {
         return TRUE;
     }
 
-    // Method to get the last inserted ID in the database
+    /**
+     * Get Last Inserted ID
+     * 
+     * Retrieves the ID of the last inserted record in the database.
+     * 
+     * @return int The last inserted ID.
+     */
     public function getLastInsertedID() {
         return $this->pdo->lastInsertId();
     }
 
-    // Method to log in the user
+    /**
+     * Login
+     * 
+     * Logs in a user to the system.
+     * 
+     * @param string $logUser The username of the user.
+     * @param string $logPass The password of the user.
+     * @param bool $special Special login flag.
+     * @return bool True on successful login, false otherwise.
+     */
     public function login($logUser, $logPass, $special = FALSE) {
         // Set the timezone to UTC
         date_default_timezone_set('UTC');
@@ -263,7 +302,13 @@ class LRSys {
         }
     }    
     
-    // Method to log in the user to the database
+    /**
+     * Login Database
+     * 
+     * Handles database interactions for user login.
+     * 
+     * @param int $id The ID of the user.
+     */
     private function loginDatabase($id) {
         // SQL query to check if the user is online
         $this->session->newQuery();
@@ -289,7 +334,16 @@ class LRSys {
         setcookie('logged', '1', time() + 172800);
     }
     
-    // Method to verify the login credentials
+    /**
+     * Verify Login
+     * 
+     * Verifies the login details provided by the user.
+     * 
+     * @param bool $fb Facebook login flag.
+     * @param bool $tt Twitter login flag.
+     * @param bool $rm Remember me flag.
+     * @return bool True if the login details are valid, false otherwise.
+     */
     private function verifyLogin($fb, $tt, $rm) {
         // Check if the login is through Facebook, Twitter, or Remember Me
         if($fb || $rm || $tt){
